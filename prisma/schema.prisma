@@ -11,22 +11,35 @@ datasource db {
   relationMode = "prisma"
 }
 
-model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  username String @unique
-  password String
+model Pacientes {
+  paciente_id Int      @id @default(autoincrement())
+  nome        String   @db.VarChar(200)
+  email       String   @unique @db.VarChar(100)
+  idade       DateTime @db.DateTime
 
-  tweets Tweet[]
+  atendimentos Atendimentos[]
 }
 
-model Tweet {
-  id     String @id @default(cuid())
-  userId String
-  text   String
+model Psicologos {
+  psicologo_id Int    @id @default(autoincrement())
+  nome         String @db.VarChar(200)
+  email        String @unique @db.VarChar(100)
+  apresentacao String @db.VarChar(400)
+  senha        String
 
-  user User @relation(fields: [userId], references: [id])
+  atendimentos Atendimentos[]
+}
 
-  @@index([userId]) //usar sempre que precisar referenciar chave estrangeira
+model Atendimentos {
+  atendimentos_id  Int      @id @default(autoincrement())
+  data_atendimento DateTime @db.DateTime
+  observacao       String   @db.Text
+  psicologoId      Int
+  pacienteId       Int
+
+  psicologos Psicologos @relation(fields: [psicologoId], references: [psicologo_id])
+  pacientes Pacientes @relation(fields: [pacienteId], references: [paciente_id])
+
+  @@index([psicologoId])
+  @@index([pacienteId])
 }
