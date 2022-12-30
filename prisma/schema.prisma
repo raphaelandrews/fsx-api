@@ -11,35 +11,10 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Pacientes {
-  paciente_id Int      @id @default(autoincrement())
-  nome        String   @db.VarChar(200)
-  email       String   @unique @db.VarChar(100)
-  idade       DateTime @db.DateTime
-
-  atendimentos Atendimentos[]
-}
-
-model Psicologos {
-  psicologo_id Int    @id @default(autoincrement())
-  nome         String @db.VarChar(200)
-  email        String @unique @db.VarChar(100)
-  apresentacao String @db.VarChar(400)
-  senha        String
-
-  atendimentos Atendimentos[]
-}
-
-model Atendimentos {
-  atendimentos_id  Int      @id @default(autoincrement())
-  data_atendimento DateTime @db.DateTime
-  observacao       String   @db.Text
-  psicologoId      Int
-  pacienteId       Int
-
-  psicologos Psicologos @relation(fields: [psicologoId], references: [psicologo_id])
-  pacientes Pacientes @relation(fields: [pacienteId], references: [paciente_id])
-
-  @@index([psicologoId])
-  @@index([pacienteId])
+model Players {
+  player_id Int    @id @default(autoincrement())
+  name      String @db.VarChar(200)
+  blitz     Int
+  rapid     Int
+  classic   Int
 }
