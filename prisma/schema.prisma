@@ -12,9 +12,31 @@ datasource db {
 }
 
 model Players {
-  player_id Int    @id @default(autoincrement())
-  name      String @db.VarChar(200)
-  blitz     Int
-  rapid     Int
-  classic   Int
+  player_id       Int      @id @default(autoincrement())
+  name            String   @db.VarChar(200)
+  shortName       String?   @db.VarChar(100)
+  blitz           Int
+  rapid           Int
+  classic         Int
+  title           String?   @db.VarChar(150)
+  shortTitle      String?   @db.VarChar(10)
+  city            String?   @db.VarChar(200)
+  birthYear       Int?
+  profilePhoto    String?   @db.VarChar(400)
+  backgroundPhoto String?   @db.VarChar(400)
+  lichessID       String?   @db.VarChar(200)
+  chesscomID      String?   @db.VarChar(200)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  playerTournaments PlayerTournaments[]
+}
+
+model PlayerTournaments {
+  playerTournaments_id Int @id @default(autoincrement())
+  playerID Int
+
+  players Players @relation(fields: [playerID], references: [player_id])
+
+  @@index([playerID])
 }
