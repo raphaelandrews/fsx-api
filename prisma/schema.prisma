@@ -34,6 +34,11 @@ model Players {
 
 model PlayerTournaments {
   playerTournaments_id Int @id @default(autoincrement())
+  tournament String   @db.VarChar(200)
+  ratingType String   @db.VarChar(20)
+  variation Int
+  variationType Boolean
+
   playerID Int
 
   players Players @relation(fields: [playerID], references: [player_id])

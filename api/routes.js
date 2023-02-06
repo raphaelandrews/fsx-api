@@ -36,12 +36,21 @@ router.get("/players/:id", async ctx => {
 
 router.post("/players", async ctx => {
     try {
-        const players= await prisma.players.create({
+        const players = await prisma.players.create({
             data: {
                 name: ctx.request.body.name,
+                shortName: ctx.request.body.shortName,
                 blitz: ctx.request.body.blitz,
                 rapid: ctx.request.body.rapid,
                 classic: ctx.request.body.classic,
+                title: ctx.request.body.title,
+                shortTitle: ctx.request.body.shortTitle,
+                city: ctx.request.body.city,
+                birthYear: ctx.request.body.birthYear,
+                profilePhoto: ctx.request.body.profilePhoto,
+                backgroundPhoto: ctx.request.body.backgroundPhoto,
+                lichessID: ctx.request.body.lichessID,
+                chesscomID: ctx.request.body.chesscomID,
             }
         })
 
@@ -49,11 +58,22 @@ router.post("/players", async ctx => {
         ctx.body = {
             player_id: players.player_id,
             name: players.name,
+            shortName: players.shortName,
             blitz: players.blitz,
             rapid: players.rapid,
-            classic: players.classic
+            classic: players.classic,
+            title: players.title,
+            shortTitle: players.shortTitle,
+            city: players.city,
+            birthYear: players.birthYear,
+            profilePhoto: players.profilePhoto,
+            backgroundPhoto: players.backgroundPhoto,
+            lichessID: players.lichessID,
+            chesscomID: players.chesscomID,
+            createdAt: players.createdAt,
+            updatedAt: players.updatedAt,
         }
-        
+
     } catch (error) {
         if (error.meta && !error.meta.target) {
             ctx.status = 422
@@ -67,7 +87,20 @@ router.post("/players", async ctx => {
 router.put("/players/:id", async ctx => {
     try {
         const { id } = ctx.params;
-        const { name, blitz, rapid, classic } = ctx.request.body;
+        const { name,
+            shortName,
+            blitz,
+            rapid,
+            classic,
+            title,
+            shortTitle,
+            city,
+            birthYear,
+            profilePhoto,
+            backgroundPhoto,
+            lichessID,
+            chesscomID,
+        } = ctx.request.body;
 
         const update = await prisma.players.update({
             where: {
@@ -75,9 +108,18 @@ router.put("/players/:id", async ctx => {
             },
             data: {
                 name,
+                shortName,
                 blitz,
                 rapid,
                 classic,
+                title,
+                shortTitle,
+                city,
+                birthYear,
+                profilePhoto,
+                backgroundPhoto,
+                lichessID,
+                chesscomID,
             }
         })
 
