@@ -7,8 +7,26 @@ const prisma = new PrismaClient();
 
 router.get("/players", async ctx => {
     try {
-        const listPlayers = await prisma.players.findMany()
-        ctx.body = listPlayers
+        const listPlayers = await prisma.players.findMany();
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
+router.get("/top-blitz", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            orderBy: [
+                {
+                    blitz: 'desc',
+                },
+            ],
+            take: 5,
+        });
+        ctx.body = listPlayers;
     } catch (error) {
         console.log(error)
         ctx.status = 500
@@ -23,10 +41,13 @@ router.get("/players/:id", async ctx => {
         const listPlayers = await prisma.players.findUnique({
             where: {
                 player_id: parseInt(id),
+            },
+            include: {
+                playerTournaments: true,
             }
         })
 
-        ctx.body = listPlayers
+        ctx.body = listPlayers;
     } catch (error) {
         console.log(error)
         ctx.status = 500

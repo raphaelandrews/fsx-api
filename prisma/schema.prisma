@@ -36,6 +36,7 @@ model PlayerTournaments {
   playerTournaments_id Int @id @default(autoincrement())
   tournament String   @db.VarChar(200)
   ratingType String   @db.VarChar(20)
+  oldRating Int
   variation Int
   variationType Boolean
 
