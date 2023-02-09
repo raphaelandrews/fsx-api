@@ -70,6 +70,21 @@ router.get("/top-classic", async ctx => {
     }
 })
 
+router.get("/highlights", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            where: {
+                player_id: { in: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+            },
+        });
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
 router.get("/players/:id", async ctx => {
     const { id } = ctx.params;
 
