@@ -34,6 +34,42 @@ router.get("/top-blitz", async ctx => {
     }
 })
 
+router.get("/top-rapid", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            orderBy: [
+                {
+                    rapid: 'desc',
+                },
+            ],
+            take: 5,
+        });
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
+router.get("/top-classic", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            orderBy: [
+                {
+                    classic: 'desc',
+                },
+            ],
+            take: 5,
+        });
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
 router.get("/players/:id", async ctx => {
     const { id } = ctx.params;
 
