@@ -123,6 +123,7 @@ router.post("/players", async ctx => {
                 backgroundPhoto: ctx.request.body.backgroundPhoto,
                 lichessID: ctx.request.body.lichessID,
                 chesscomID: ctx.request.body.chesscomID,
+                active: ctx.request.body.active,
             }
         })
 
@@ -144,6 +145,7 @@ router.post("/players", async ctx => {
             chesscomID: players.chesscomID,
             createdAt: players.createdAt,
             updatedAt: players.updatedAt,
+            active: players.active,
         }
 
     } catch (error) {

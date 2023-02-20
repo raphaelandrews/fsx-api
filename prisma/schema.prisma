@@ -26,10 +26,12 @@ model Players {
   backgroundPhoto String?  @db.VarChar(400)
   lichessID       String?  @db.VarChar(200)
   chesscomID      String?  @db.VarChar(200)
+  active          Boolean
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime @default(now()) @updatedAt
 
   playerTournaments PlayerTournaments[]
+  role Role[]
 }
 
 model PlayerTournaments {
@@ -39,6 +41,18 @@ model PlayerTournaments {
   oldRating            Int
   variation            Int
   variationType        Boolean
+  createdAt            DateTime @default(now())
+
+  playerID Int
+
+  players Players @relation(fields: [playerID], references: [player_id])
+
+  @@index([playerID])
+}
+
+model Role {
+  role_id Int      @id @default(autoincrement())
+  roleType String  @db.VarChar(40)
   createdAt            DateTime @default(now())
 
   playerID Int
@@ -67,7 +81,7 @@ model News {
 
   newsImg NewsImg[]
 
-  paragraphs Paragraphs []
+  paragraphs Paragraphs[]
 }
 
 model Paragraphs {
