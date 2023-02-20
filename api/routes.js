@@ -7,7 +7,12 @@ const prisma = new PrismaClient();
 
 router.get("/players", async ctx => {
     try {
-        const listPlayers = await prisma.players.findMany();
+        const listPlayers = await prisma.players.findMany({
+            orderBy: 
+                {
+                    rapid: 'desc',
+                },
+        });
         ctx.body = listPlayers;
     } catch (error) {
         console.log(error)
