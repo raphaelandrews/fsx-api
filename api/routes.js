@@ -8,10 +8,13 @@ const prisma = new PrismaClient();
 router.get("/players", async ctx => {
     try {
         const listPlayers = await prisma.players.findMany({
-            orderBy: 
-                {
-                    rapid: 'desc',
-                },
+            where: {
+                active: true,
+            },
+            orderBy:
+            {
+                rapid: 'desc',
+            },
         });
         ctx.body = listPlayers;
     } catch (error) {
@@ -179,6 +182,7 @@ router.put("/players/:id", async ctx => {
             backgroundPhoto,
             lichessID,
             chesscomID,
+            active,
         } = ctx.request.body;
 
         const update = await prisma.players.update({
@@ -199,12 +203,13 @@ router.put("/players/:id", async ctx => {
                 backgroundPhoto,
                 lichessID,
                 chesscomID,
+                active,
             }
         })
 
         ctx.body = (update)
     } catch (error) {
-        console.logo(error)
+        console.log(error)
         ctx.status = 500
         ctx.body = "Internal error"
     }
