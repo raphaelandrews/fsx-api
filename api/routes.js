@@ -1,5 +1,7 @@
 import Router from "@koa/router";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const router = new Router();
 
@@ -18,7 +20,6 @@ router.get("/players-blitz", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -37,7 +38,6 @@ router.get("/players-rapid", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -56,7 +56,6 @@ router.get("/players-classic", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -74,7 +73,6 @@ router.get("/top-blitz", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -92,7 +90,6 @@ router.get("/top-rapid", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -110,7 +107,6 @@ router.get("/top-classic", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -125,7 +121,6 @@ router.get("/highlights", async ctx => {
         });
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
@@ -146,14 +141,33 @@ router.get("/players/:id", async ctx => {
 
         ctx.body = listPlayers;
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         return
     }
 })
 
 router.post("/players", async ctx => {
+    const [, token] = ctx.request.headers?.authorization?.split(" ") || []
+
+    if (!token) {
+        ctx.status = 401
+        return
+    }
+
     try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+        const userLog = await prisma.user.findUnique({
+            where: {
+                id: payload.sub
+            }
+        })
+
+        if (userLog.username != "amanojaku") {
+            ctx.status = 405
+            return
+        }
+
         const players = await prisma.players.create({
             data: {
                 name: ctx.request.body.name,
@@ -183,7 +197,6 @@ router.post("/players", async ctx => {
             title: players.title,
             shortTitle: players.shortTitle,
         }
-
     } catch (error) {
         if (error.meta && !error.meta.target) {
             ctx.status = 422
@@ -195,7 +208,27 @@ router.post("/players", async ctx => {
 })
 
 router.put("/players/:id", async ctx => {
+    const [, token] = ctx.request.headers?.authorization?.split(" ") || []
+
+    if (!token) {
+        ctx.status = 401
+        return
+    }
+
     try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+        const userLog = await prisma.user.findUnique({
+            where: {
+                id: payload.sub
+            }
+        })
+
+        if (userLog.username != "amanojaku") {
+            ctx.status = 405
+            return
+        }
+
         const { id } = ctx.params;
         const { name,
             shortName,
@@ -237,8 +270,71 @@ router.put("/players/:id", async ctx => {
 
         ctx.body = (update)
     } catch (error) {
-        console.log(error)
         ctx.status = 500
         ctx.body = "Internal error"
     }
+})
+
+/*router.post("/signup", async ctx => {
+    const saltRounds = 10
+    const password = bcrypt.hashSync(ctx.request.body.password, saltRounds)
+
+    try {
+        const user = await prisma.user.create({
+            data: {
+                name: ctx.request.body.name,
+                username: ctx.request.body.username,
+                password
+            }
+        })
+
+        const acessToken = jwt.sign({
+            sub: user.id,
+        }, process.env.JWT_SECRET, { expiresIn: '24h' })
+
+        ctx.body = {
+            id: user.id,
+            username: user.username,
+            acessToken
+        }
+    } catch (error) {
+        if (error.meta && !error.meta.target) {
+            ctx.status = 422
+            ctx.body = "Email ou nome de usuário já existe"
+            return
+        }
+
+        ctx.status = 500
+        ctx.body = "Internal error"
+    }
+})*/
+
+router.get('/login', async ctx => {
+    const [, token] = ctx.request.headers.authorization.split(" ")
+    const [username, plainTextPassword] = Buffer.from(token, "base64").toString().split(":")
+
+    const user = await prisma.user.findUnique({
+        where: { username }
+    })
+
+    if (!user) {
+        ctx.status = 404
+        return
+    }
+
+    const passwordMatch = bcrypt.compareSync(plainTextPassword, user.password)
+
+    if (passwordMatch) {
+        const acessToken = jwt.sign({
+            sub: user.id,
+        }, process.env.JWT_SECRET, { expiresIn: '24h' })
+
+        ctx.body = {
+            username: user.username,
+            acessToken
+        }
+        return
+    }
+
+    ctx.status = 404
 })
