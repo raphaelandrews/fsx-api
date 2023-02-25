@@ -5,7 +5,26 @@ export const router = new Router();
 
 const prisma = new PrismaClient();
 
-router.get("/players", async ctx => {
+router.get("/players-blitz", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            where: {
+                active: true,
+            },
+            orderBy:
+            {
+                blitz: 'desc',
+            },
+        });
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
+router.get("/players-rapid", async ctx => {
     try {
         const listPlayers = await prisma.players.findMany({
             where: {
@@ -14,6 +33,25 @@ router.get("/players", async ctx => {
             orderBy:
             {
                 rapid: 'desc',
+            },
+        });
+        ctx.body = listPlayers;
+    } catch (error) {
+        console.log(error)
+        ctx.status = 500
+        return
+    }
+})
+
+router.get("/players-classic", async ctx => {
+    try {
+        const listPlayers = await prisma.players.findMany({
+            where: {
+                active: true,
+            },
+            orderBy:
+            {
+                classic: 'desc',
             },
         });
         ctx.body = listPlayers;
@@ -138,22 +176,12 @@ router.post("/players", async ctx => {
         ctx.status = 201
         ctx.body = {
             player_id: players.player_id,
-            name: players.name,
             shortName: players.shortName,
             blitz: players.blitz,
             rapid: players.rapid,
             classic: players.classic,
             title: players.title,
             shortTitle: players.shortTitle,
-            city: players.city,
-            birthYear: players.birthYear,
-            profilePhoto: players.profilePhoto,
-            backgroundPhoto: players.backgroundPhoto,
-            lichessID: players.lichessID,
-            chesscomID: players.chesscomID,
-            createdAt: players.createdAt,
-            updatedAt: players.updatedAt,
-            active: players.active,
         }
 
     } catch (error) {
